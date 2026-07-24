@@ -1,16 +1,14 @@
 package com.devprep.devprepai.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @RequiredArgsConstructor
@@ -38,6 +36,10 @@ public class User {
     @Column(nullable = false)
     @NotBlank
     private String role;
+
+    @OneToMany(cascade = CascadeType.ALL,
+            mappedBy ="user")
+    private List<Category> categories = new ArrayList<>();
 
     public User(String name, String email, String password, String role) {
         this.name = name;
