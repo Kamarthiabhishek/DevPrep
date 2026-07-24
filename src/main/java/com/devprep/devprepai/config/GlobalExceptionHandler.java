@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception exception, HttpServletRequest request) {
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", request);
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage(), request);
     }
 
     @ExceptionHandler({InvalidCategoryException.class})
