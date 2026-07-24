@@ -1,6 +1,7 @@
 package com.devprep.devprepai.config;
 
 import com.devprep.devprepai.dto.ErrorResponse;
+import com.devprep.devprepai.exception.InvalidCategoryException;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
@@ -33,6 +34,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception exception, HttpServletRequest request) {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", request);
     }
+
+    @ExceptionHandler({InvalidCategoryException.class})
+    public ResponseEntity<ErrorResponse> handleInvalidCategory(InvalidCategoryException ex, HttpServletRequest request) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
+    }
+
 
     private ResponseEntity<ErrorResponse> buildResponse(
             HttpStatus status,
