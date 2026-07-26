@@ -52,11 +52,12 @@ public class AuthService {
             throw new IllegalArgumentException("Email is already registered");
         }
 
+        String defaultRole = "ROLE_USER";
         User user = new User(
                 request.name().trim(),
                 request.email().trim(),
                 passwordEncoder.encode(request.password()),
-                request.role()
+                defaultRole
         );
 
         User savedUser = userRepository.save(user);

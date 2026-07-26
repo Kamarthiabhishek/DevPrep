@@ -5,12 +5,16 @@ import com.devprep.devprepai.exception.InvalidCategoryException;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -38,6 +42,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({InvalidCategoryException.class})
     public ResponseEntity<ErrorResponse> handleInvalidCategory(InvalidCategoryException ex, HttpServletRequest request) {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpServletRequest request) {
+
+        String message = ex.getBindingResult().getFieldErrors().stream().map(
+                err -> err.getField() + " : "+ err.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+        return  buildResponse(HttpStatus.BAD_REQUEST, message, request);
     }
 
 

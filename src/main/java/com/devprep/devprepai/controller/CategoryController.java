@@ -3,6 +3,7 @@ package com.devprep.devprepai.controller;
 import com.devprep.devprepai.dto.CategoryRequest;
 import com.devprep.devprepai.dto.CategoryResponse;
 import com.devprep.devprepai.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class CategoryController {
     }
 
     @PostMapping("/categories")
-    public ResponseEntity<CategoryResponse> CreateCategory(@RequestBody CategoryRequest request) {
+    public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.addCategory(request));
     }
 
@@ -30,12 +31,12 @@ public class CategoryController {
     }
 
     @PatchMapping("/categories/{id}")
-    public ResponseEntity<CategoryResponse> updateCategory(@RequestBody CategoryRequest request, @PathVariable Long id){
+    public ResponseEntity<CategoryResponse> updateCategory(@Valid @RequestBody CategoryRequest request, @PathVariable Long id){
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.editCategory(request, id));
     }
 
     @DeleteMapping("/categories/{id}")
     public ResponseEntity<CategoryResponse> deleteCategory(@PathVariable Long id){
-        return ResponseEntity.status(HttpStatus.OK).body(categoryService.deleteCategory(id));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(categoryService.deleteCategory(id));
     }
 }
