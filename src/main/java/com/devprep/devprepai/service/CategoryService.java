@@ -63,7 +63,7 @@ public class CategoryService {
         if(!req.getName().equals(request.name()) &&
                 categoryRepository.existsByNameAndUser(request.name(), user)) {
             log.warn("Category {} already exists for user {}", request.name(), user.getName());
-            throw new InvalidCategoryException("Category with name " + request.name() + " doesn't exists for user " + user.getName());
+            throw new InvalidCategoryException("Category with name " + request.name() + " already exists for user " + user.getName());
         }
 
         log.info("Category edit request received for :{}", req.getName());
@@ -104,6 +104,6 @@ public class CategoryService {
     }
 
     private CategoryResponse addCategoryResponse(Category category){
-        return new CategoryResponse(category.getUser().getId(), category.getName());
+        return new CategoryResponse(category.getCategoryId(), category.getName());
     }
 }

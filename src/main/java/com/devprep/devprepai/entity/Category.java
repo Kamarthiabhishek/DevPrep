@@ -2,12 +2,15 @@ package com.devprep.devprepai.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.Optional;
 
 @Entity
-@Data
+@Getter
+@Setter
 public class Category {
 
     @Id
@@ -17,7 +20,7 @@ public class Category {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -29,8 +32,5 @@ public class Category {
 
     public Category() {
 
-    }
-
-    public Category(String trim, Optional<User> user) {
     }
 }

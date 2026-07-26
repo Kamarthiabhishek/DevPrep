@@ -6,12 +6,13 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@RequiredArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
 public class User {
@@ -40,6 +41,9 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL,
             mappedBy ="user")
     private List<Category> categories = new ArrayList<>();
+
+    public User() {
+    }
 
     public User(String name, String email, String password, String role) {
         this.name = name;
