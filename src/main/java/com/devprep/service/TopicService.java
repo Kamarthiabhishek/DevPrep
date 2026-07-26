@@ -1,0 +1,107 @@
+package com.devprep.service;
+
+import com.devprep.dto.TopicRequest;
+import com.devprep.dto.TopicResponse;
+import com.devprep.entity.Category;
+import com.devprep.entity.Topic;
+import com.devprep.entity.User;
+import com.devprep.enums.TopicStatus;
+import com.devprep.exception.InvalidCategoryException;
+import com.devprep.exception.InvalidTopicException;
+import com.devprep.repository.CategoryRepository;
+import com.devprep.repository.TopicRepository;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Slf4j
+@Service
+public class TopicService {
+
+    private final TopicRepository topicRepository;
+    private final AuthService authService;
+    private final CategoryService categoryService;
+
+
+    public TopicService(
+            CategoryRepository categoryRepository, AuthService authService, TopicRepository topicRepository, CategoryService categoryService
+    ){this.topicRepository = topicRepository;
+    this.authService = authService;
+    this.categoryService = categoryService;
+    }
+
+
+    @Transactional
+    public TopicResponse addTopics(TopicRequest topicRequest, Long categoryId) {
+        User user = authService.currentUser();
+        log.info("Add topic request received for user :  {}", user.getName());
+
+        Category category = categoryService.findCategoryById(categoryId);
+
+        if(topicRepository.existsByTitleAndCategory(topicRequest.title(), category)){
+            log.info("Topic already exists for title :  {} and category : {}", topicRequest.title(), category.getName());
+            throw new InvalidCategoryException("Topic already exists for category "+ category.getName());
+        }
+
+        TopicStatus status = TopicStatus.NOT_STARTED;
+        Topic learningTopic = new Topic(
+                topicRequest.title(),
+                topicRequest.description(),
+                category,
+                status
+        );
+        Topic savedTopic = topicRepository.save(learningTopic);
+        log.info("Topic saved successfully : topicId : {}", savedTopic.getTopicId());
+        return topicResponse(learningTopic);
+    }
+
+    public TopicResponse editTopic(TopicRequest request, Long categoryId, Long topicId) {
+        User user = authService.currentUser();
+        log.info("Edit topic request received for topicId : {} user :  {}", topicId,user.getName());
+
+        Category category = categoryService.findCategoryById(categoryId);
+        Topic topic = findTopicById(topicId, category);
+
+        if(topic.getTitle().equalsIgnoreCase(request.title())){
+            log.warn("Topic with title : {} already exists for category : {}" ,request.title(), category.getName());
+            throw new InvalidTopicException("Topic already exists for category "+ category.getName());
+        }
+
+        topic.setTitle(request.title());
+        Topic savedTopic = topicRepository.save(topic);
+        log.info("Topic updated successfully : topicId : {}", savedTopic.getTopicId());
+
+        return topicResponse(savedTopic);
+    }
+
+    @Transactional
+    public String deleteTopic(Long topicId, Long categoryId) {
+        User user = authService.currentUser();
+        log.info("Delete request received for topic : {} from user : {}", topicId, user.getName());
+
+        Category category = categoryService.findCategoryById(categoryId);
+        Topic topic = findTopicById(topicId, category);
+        topicRepository.delete(topic);
+        topicRepository.flush();
+
+        log.info("Topic deleted successfully : topicId : {}", topic.getTopicId());
+
+        return "Topic Deleted Successfully";
+    }
+
+
+    public Topic findTopicById(Long topicId, Category category) {
+        User user = authService.currentUser();
+        return topicRepository.findByTopicIdAndCategory(topicId, category).orElseThrow(
+                () -> {
+                    log.warn("Topic with id {} don't exists for category {} for user {}",topicId, category.getName(), user.getName());
+                    return new InvalidCategoryException("Topic with id " + topicId + " doesn't exists for category " + category.getName());
+                }
+        );
+    }
+
+    public TopicResponse topicResponse(Topic learningTopic){
+        return new TopicResponse(learningTopic.getTopicId(), learningTopic.getTitle(), learningTopic.getDescription(), learningTopic.getStatus());
+    }
+}
