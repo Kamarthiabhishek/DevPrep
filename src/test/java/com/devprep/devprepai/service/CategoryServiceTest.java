@@ -1,11 +1,13 @@
 package com.devprep.devprepai.service;
 
 
-import com.devprep.devprepai.dto.CategoryRequest;
-import com.devprep.devprepai.dto.CategoryResponse;
-import com.devprep.devprepai.entity.Category;
-import com.devprep.devprepai.entity.User;
-import com.devprep.devprepai.repository.CategoryRepository;
+import com.devprep.dto.CategoryRequest;
+import com.devprep.dto.CategoryResponse;
+import com.devprep.entity.Category;
+import com.devprep.entity.User;
+import com.devprep.repository.CategoryRepository;
+import com.devprep.service.AuthService;
+import com.devprep.service.CategoryService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
