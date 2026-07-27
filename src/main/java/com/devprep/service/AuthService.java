@@ -4,6 +4,7 @@ import com.devprep.dto.AuthResponse;
 import com.devprep.dto.LoginRequest;
 import com.devprep.dto.RegisterRequest;
 import com.devprep.entity.User;
+import com.devprep.enums.Role;
 import com.devprep.exception.InvalidCategoryException;
 import com.devprep.repository.UserRepository;
 import com.devprep.security.JWTUtil;
@@ -50,7 +51,7 @@ public class AuthService {
             throw new IllegalArgumentException("Email is already registered");
         }
 
-        String defaultRole = "ROLE_USER";
+        Role defaultRole = Role.USER;
         User user = new User(
                 request.name().trim(),
                 request.email().trim(),
@@ -64,7 +65,7 @@ public class AuthService {
         UserDetails userDetails = org.springframework.security.core.userdetails.User
                 .withUsername(savedUser.getEmail())
                 .password(savedUser.getPassword())
-                .authorities(savedUser.getRole())
+                .authorities(String.valueOf(defaultRole))
                 .build();
 
         return buildAuthResponse(userDetails);

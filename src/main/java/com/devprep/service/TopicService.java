@@ -38,9 +38,9 @@ public class TopicService {
     @Transactional
     public TopicResponse addTopics(TopicRequest topicRequest, Long categoryId) {
         User user = authService.currentUser();
-        log.info("Add topic request received for user :  {}", user.getName());
+        log.info("Add topic request received for user :  {}", user.getId());
 
-        Category category = categoryService.findCategoryById(categoryId);
+        Category category = categoryService.findCategoryById(categoryId, user);
 
         if(topicRepository.existsByTitleAndCategory(topicRequest.title(), category)){
             log.info("Topic already exists for title :  {} and category : {}", topicRequest.title(), category.getName());
@@ -61,12 +61,12 @@ public class TopicService {
 
     public TopicResponse editTopic(TopicRequest request, Long categoryId, Long topicId) {
         User user = authService.currentUser();
-        log.info("Edit topic request received for topicId : {} user :  {}", topicId,user.getName());
+        log.info("Edit topic request received for topicId : {} user :  {}", topicId,user.getId());
 
-        Category category = categoryService.findCategoryById(categoryId);
-        Topic topic = findTopicById(topicId, category);
+        Category category = categoryService.findCategoryById(categoryId,user);
+        Topic topic = findTopicById(topicId, category,user);
 
-        if(topic.getTitle().equalsIgnoreCase(request.title())){
+        if(topic.getTitle().equalsIgnoreCase(request.title()) && topicRepository.existsByTitleAndCategory(request.title(), category)){
             log.warn("Topic with title : {} already exists for category : {}" ,request.title(), category.getName());
             throw new InvalidTopicException("Topic already exists for category "+ category.getName());
         }
@@ -80,8 +80,8 @@ public class TopicService {
 
     public List<TopicResponse> findAllTopics(Long categoryId) {
         User user = authService.currentUser();
-        log.info("Find topic request received for category :  {} by user {}", categoryId, user.getName());
-        Category category = categoryService.findCategoryById(categoryId);
+        log.info("Find topic request received for category :  {} by user {}", categoryId, user.getId());
+        Category category = categoryService.findCategoryById(categoryId, user);
 
         List<Topic> topics = topicRepository.findByCategory(category);
         return topics.stream().map(this::topicResponse).toList();
@@ -90,10 +90,10 @@ public class TopicService {
     @Transactional
     public String deleteTopic(Long topicId, Long categoryId) {
         User user = authService.currentUser();
-        log.info("Delete request received for topic : {} from user : {}", topicId, user.getName());
+        log.info("Delete request received for topic : {} from user : {}", topicId, user.getId());
 
-        Category category = categoryService.findCategoryById(categoryId);
-        Topic topic = findTopicById(topicId, category);
+        Category category = categoryService.findCategoryById(categoryId,user);
+        Topic topic = findTopicById(topicId, category, user);
         topicRepository.delete(topic);
         topicRepository.flush();
 
@@ -102,11 +102,10 @@ public class TopicService {
     }
 
 
-    public Topic findTopicById(Long topicId, Category category) {
-        User user = authService.currentUser();
+    public Topic findTopicById(Long topicId, Category category, User user) {
         return topicRepository.findByTopicIdAndCategory(topicId, category).orElseThrow(
                 () -> {
-                    log.warn("Topic with id {} don't exists for category {} for user {}",topicId, category.getName(), user.getName());
+                    log.warn("Topic with id {} don't exists for category {} for user {}",topicId, category.getName(), user.getId());
                     return new InvalidCategoryException("Topic with id " + topicId + " doesn't exists for category " + category.getName());
                 }
         );
