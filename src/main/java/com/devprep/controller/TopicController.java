@@ -2,11 +2,14 @@ package com.devprep.controller;
 
 import com.devprep.dto.TopicRequest;
 import com.devprep.dto.TopicResponse;
+import com.devprep.entity.Topic;
 import com.devprep.service.TopicService;
 import org.hibernate.validator.constraints.ScriptAssert;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
@@ -31,5 +34,10 @@ public class TopicController {
     @DeleteMapping("/{categoryId}/topics/{topicId}")
     public ResponseEntity<String> deleteTopic(@PathVariable Long categoryId, @PathVariable Long topicId) {
         return ResponseEntity.status(HttpStatus.OK).body(topicService.deleteTopic(topicId, categoryId));
+    }
+
+    @GetMapping("/{categoryId}/topics")
+    public ResponseEntity<List<TopicResponse>> getAllTopicForCategory(@PathVariable Long categoryId) {
+        return ResponseEntity.status(HttpStatus.OK).body(topicService.findAllTopics(categoryId));
     }
 }
