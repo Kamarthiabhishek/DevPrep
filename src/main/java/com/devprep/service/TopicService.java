@@ -15,6 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 @Service
 public class TopicService {
@@ -75,6 +78,15 @@ public class TopicService {
         return topicResponse(savedTopic);
     }
 
+    public List<TopicResponse> findAllTopics(Long categoryId) {
+        User user = authService.currentUser();
+        log.info("Find topic request received for category :  {} by user {}", categoryId, user.getName());
+        Category category = categoryService.findCategoryById(categoryId);
+
+        List<Topic> topics = topicRepository.findByCategory(category);
+        return topics.stream().map(this::topicResponse).toList();
+    }
+
     @Transactional
     public String deleteTopic(Long topicId, Long categoryId) {
         User user = authService.currentUser();
@@ -86,7 +98,6 @@ public class TopicService {
         topicRepository.flush();
 
         log.info("Topic deleted successfully : topicId : {}", topic.getTopicId());
-
         return "Topic Deleted Successfully";
     }
 
