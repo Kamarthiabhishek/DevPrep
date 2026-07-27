@@ -28,11 +28,11 @@ public class CategoryService {
     @Transactional
     public CategoryResponse addCategory(CategoryRequest request){
         User user = authService.currentUser();
-        log.info("Add category request for : {} by user {}", request.name(), user.getName());
+        log.info("Add category request for : {} by user {}", request.name(), user.getId());
 
         if(categoryRepository.existsByNameAndUser(request.name(), user)){
-            log.warn("Category with name {} already exists for user {}", request.name(), user.getName());
-            throw new InvalidCategoryException("Category with name " + request.name() + " already exists for user " + user.getName());
+            log.warn("Category with name {} already exists for user {}", request.name(), user.getId());
+            throw new InvalidCategoryException("Category with name " + request.name() + " already exists for user " + user.getId());
         }
         Category req = new Category(
                 request.name(),
@@ -47,13 +47,13 @@ public class CategoryService {
     public CategoryResponse editCategory(CategoryRequest request, Long id){
         User user = authService.currentUser();
 
-        log.info("Edit category request from : {}", user.getEmail());
-        Category req = findCategoryById(id);
+        log.info("Edit category request from : {}", user.getId());
+        Category req = findCategoryById(id,user);
 
         if(!req.getName().equalsIgnoreCase(request.name()) &&
                 categoryRepository.existsByNameAndUser(request.name(), user)) {
-            log.warn("Category {} already exists for user {}", request.name(), user.getName());
-            throw new InvalidCategoryException("Category with name " + request.name() + " already exists for user " + user.getName());
+            log.warn("Category {} already exists for user {}", request.name(), user.getId());
+            throw new InvalidCategoryException("Category with name " + request.name() + " already exists for user " + user.getId());
         }
 
         log.info("Category edit request received for :{}", req.getName());
@@ -67,9 +67,9 @@ public class CategoryService {
     public List<CategoryResponse> getAllCategories(){
         User user  = authService.currentUser();
 
-        log.info("Get all categories request by user {}", user.getName());
+        log.info("Get all categories request by user {}", user.getId());
         List<Category> categories =  categoryRepository.findByUser(user);
-        log.info("Successfully fetched {} categories for user {} ", categories.size(), user.getName());
+        log.info("Successfully fetched {} categories for user {} ", categories.size(), user.getId());
 
         return categories.stream()
                 .map(this::addCategoryResponse).toList();
@@ -80,19 +80,18 @@ public class CategoryService {
         User user = authService.currentUser();
         log.info("Delete category request for : {} by user {}", id, user.getEmail());
 
-        Category req = findCategoryById(id);
+        Category req = findCategoryById(id, user);
         categoryRepository.delete(req);
-        log.info("Category {} deleted successfully for user {}", req.getName(), user.getName());
+        log.info("Category {} deleted successfully for user {}", req.getName(), user.getId());
 
         return "Category Deleted Successfully";
     }
 
-    public Category findCategoryById(Long id){
-        User user = authService.currentUser();
+    public Category findCategoryById(Long id, User user){
         return categoryRepository.findByCategoryIdAndUser(id, user).orElseThrow(
                 () -> {
-                    log.warn("Category with id {} don't exists for user {}", id, user.getName());
-                    return new InvalidCategoryException("Category with id " + id + " doesn't exists for user " + user.getName());
+                    log.warn("Category with id {} don't exists for user {}", id, user.getId());
+                    return new InvalidCategoryException("Category with id " + id + " doesn't exists for user " + user.getId());
                 }
         );
     }

@@ -1,5 +1,6 @@
 package com.devprep.entity;
 
+import com.devprep.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -33,8 +34,8 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    @NotBlank
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @OneToMany(cascade = CascadeType.ALL,
             mappedBy ="user")
@@ -43,7 +44,7 @@ public class User {
     public User() {
     }
 
-    public User(String name, String email, String password, String role) {
+    public User(String name, String email, String password, Role role) {
         this.name = name;
         this.email = email;
         this.password = password;
