@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -27,6 +29,15 @@ public class Topic {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
+
+    @OneToMany(
+            mappedBy = "topic",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<Notes> notes;
+
 
     public Topic(String title, String description, Category category, TopicStatus status) {
         this.title = title;
