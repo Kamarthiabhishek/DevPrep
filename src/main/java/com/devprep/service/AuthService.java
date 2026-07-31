@@ -15,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,7 +66,7 @@ public class AuthService {
         UserDetails userDetails = org.springframework.security.core.userdetails.User
                 .withUsername(savedUser.getEmail())
                 .password(savedUser.getPassword())
-                .authorities(String.valueOf(defaultRole))
+                .authorities("ROLE_"+defaultRole.name())
                 .build();
 
         return buildAuthResponse(userDetails);
@@ -92,7 +93,7 @@ public class AuthService {
         User currentUser = userRepository.findByEmail(email);
 
         if(currentUser == null){
-            throw new InvalidCategoryException("User not found");
+            throw new UsernameNotFoundException("User not found");
         }
         return currentUser;
     }

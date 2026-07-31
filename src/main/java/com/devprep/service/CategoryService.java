@@ -76,15 +76,13 @@ public class CategoryService {
     }
 
     @Transactional
-    public String deleteCategory(Long id){
+    public void deleteCategory(Long id){
         User user = authService.currentUser();
         log.info("Delete category request for : {} by user {}", id, user.getEmail());
 
         Category req = findCategoryById(id, user);
         categoryRepository.delete(req);
         log.info("Category {} deleted successfully for user {}", req.getName(), user.getId());
-
-        return "Category Deleted Successfully";
     }
 
     public Category findCategoryById(Long id, User user){

@@ -33,7 +33,7 @@ public class TopicController {
 
     @DeleteMapping("/{categoryId}/topics/{topicId}")
     public ResponseEntity<String> deleteTopic(@PathVariable Long categoryId, @PathVariable Long topicId) {
-        return ResponseEntity.status(HttpStatus.OK).body(topicService.deleteTopic(topicId, categoryId));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Topic deleted successfully");
     }
 
     @GetMapping("/{categoryId}/topics")

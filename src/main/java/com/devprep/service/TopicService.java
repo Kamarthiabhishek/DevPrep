@@ -28,7 +28,7 @@ public class TopicService {
 
 
     public TopicService(
-            CategoryRepository categoryRepository, AuthService authService, TopicRepository topicRepository, CategoryService categoryService
+            AuthService authService, TopicRepository topicRepository, CategoryService categoryService
     ){this.topicRepository = topicRepository;
     this.authService = authService;
     this.categoryService = categoryService;
@@ -88,7 +88,7 @@ public class TopicService {
     }
 
     @Transactional
-    public String deleteTopic(Long topicId, Long categoryId) {
+    public void deleteTopic(Long topicId, Long categoryId) {
         User user = authService.currentUser();
         log.info("Delete request received for topic : {} from user : {}", topicId, user.getId());
 
@@ -98,7 +98,6 @@ public class TopicService {
         topicRepository.flush();
 
         log.info("Topic deleted successfully : topicId : {}", topic.getTopicId());
-        return "Topic Deleted Successfully";
     }
 
 
