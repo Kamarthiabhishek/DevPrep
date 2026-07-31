@@ -5,7 +5,6 @@ import com.devprep.dto.LoginRequest;
 import com.devprep.dto.RegisterRequest;
 import com.devprep.entity.User;
 import com.devprep.enums.Role;
-import com.devprep.exception.InvalidCategoryException;
 import com.devprep.repository.UserRepository;
 import com.devprep.security.JWTUtil;
 
@@ -66,7 +65,7 @@ public class AuthService {
         UserDetails userDetails = org.springframework.security.core.userdetails.User
                 .withUsername(savedUser.getEmail())
                 .password(savedUser.getPassword())
-                .authorities("ROLE_"+defaultRole.name())
+                .authorities(defaultRole.name())
                 .build();
 
         return buildAuthResponse(userDetails);

@@ -1,6 +1,5 @@
 package com.devprep.repository;
 
-import com.devprep.dto.TopicResponse;
 import com.devprep.entity.Category;
 import com.devprep.entity.Topic;
 import org.springframework.data.jpa.repository.JpaRepository;

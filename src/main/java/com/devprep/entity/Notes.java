@@ -1,6 +1,5 @@
 package com.devprep.entity;
 
-import com.devprep.dto.TopicRequest;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
