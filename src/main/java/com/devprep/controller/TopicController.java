@@ -2,9 +2,8 @@ package com.devprep.controller;
 
 import com.devprep.dto.TopicRequest;
 import com.devprep.dto.TopicResponse;
-import com.devprep.entity.Topic;
 import com.devprep.service.TopicService;
-import org.hibernate.validator.constraints.ScriptAssert;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,12 +21,12 @@ public class TopicController {
     }
 
     @PostMapping("/{categoryId}/topics")
-    public ResponseEntity<TopicResponse> addTopic(@RequestBody TopicRequest topicRequest, @PathVariable Long categoryId) {
+    public ResponseEntity<TopicResponse> addTopic(@Valid @RequestBody TopicRequest topicRequest, @PathVariable Long categoryId) {
         return ResponseEntity.status(HttpStatus.CREATED).body(topicService.addTopics(topicRequest, categoryId));
     }
 
     @PatchMapping("/{categoryId}/topics/{topicId}")
-    public ResponseEntity<TopicResponse> editTopic(@RequestBody TopicRequest request, @PathVariable Long categoryId, @PathVariable Long topicId) {
+    public ResponseEntity<TopicResponse> editTopic(@Valid @RequestBody TopicRequest request, @PathVariable Long categoryId, @PathVariable Long topicId) {
         return ResponseEntity.status(HttpStatus.OK).body(topicService.editTopic(request,categoryId, topicId));
     }
 

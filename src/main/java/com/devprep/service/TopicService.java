@@ -8,14 +8,10 @@ import com.devprep.entity.User;
 import com.devprep.enums.TopicStatus;
 import com.devprep.exception.InvalidCategoryException;
 import com.devprep.exception.InvalidTopicException;
-import com.devprep.repository.CategoryRepository;
 import com.devprep.repository.TopicRepository;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -66,7 +62,7 @@ public class TopicService {
         Category category = categoryService.findCategoryById(categoryId,user);
         Topic topic = findTopicById(topicId, category,user);
 
-        if(topic.getTitle().equalsIgnoreCase(request.title()) && topicRepository.existsByTitleAndCategory(request.title(), category)){
+        if(!topic.getTitle().equalsIgnoreCase(request.title()) && topicRepository.existsByTitleAndCategory(request.title(), category)){
             log.warn("Topic with title : {} already exists for category : {}" ,request.title(), category.getName());
             throw new InvalidTopicException("Topic already exists for category "+ category.getName());
         }
