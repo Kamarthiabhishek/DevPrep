@@ -2,6 +2,7 @@ package com.devprep.controller;
 
 import com.devprep.dto.TopicRequest;
 import com.devprep.dto.TopicResponse;
+import com.devprep.dto.TopicStatusRequest;
 import com.devprep.service.TopicService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -32,11 +33,16 @@ public class TopicController {
 
     @DeleteMapping("/{categoryId}/topics/{topicId}")
     public ResponseEntity<String> deleteTopic(@PathVariable Long categoryId, @PathVariable Long topicId) {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Topic deleted successfully");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(topicService.deleteTopic(categoryId, topicId));
     }
 
     @GetMapping("/{categoryId}/topics")
     public ResponseEntity<List<TopicResponse>> getAllTopicForCategory(@PathVariable Long categoryId) {
         return ResponseEntity.status(HttpStatus.OK).body(topicService.findAllTopics(categoryId));
+    }
+
+    @PatchMapping("/{categoryId}/topics/{topicId}/status")
+    public ResponseEntity<TopicResponse> updateStatus(@PathVariable Long categoryId, @PathVariable Long topicId, @RequestBody TopicStatusRequest request){
+        return ResponseEntity.status(HttpStatus.OK).body(topicService.updateStatus(categoryId, topicId, request));
     }
 }

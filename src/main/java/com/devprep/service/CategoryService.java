@@ -76,15 +76,28 @@ public class CategoryService {
     }
 
     @Transactional
-    public void deleteCategory(Long id){
+    public String deleteCategory(Long id){
         User user = authService.currentUser();
         log.info("Delete category request for : {} by user {}", id, user.getEmail());
 
         Category req = findCategoryById(id, user);
         categoryRepository.delete(req);
         log.info("Category {} deleted successfully for user {}", req.getName(), user.getId());
+
+        return "Category with ID :  "+id+" deleted successfully";
     }
 
+    public CategoryResponse findCategory(Long id){
+
+        Category category = categoryRepository.findByCategoryId(id).orElseThrow(
+                () -> {
+                    log.error("Category with id {} not found", id);
+                    return new InvalidCategoryException("Category with id " + id + " not found");
+                }
+        );
+
+        return addCategoryResponse(category);
+    }
     public Category findCategoryById(Long id, User user){
         return categoryRepository.findByCategoryIdAndUser(id, user).orElseThrow(
                 () -> {

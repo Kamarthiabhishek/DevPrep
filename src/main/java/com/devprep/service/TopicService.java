@@ -2,11 +2,13 @@ package com.devprep.service;
 
 import com.devprep.dto.TopicRequest;
 import com.devprep.dto.TopicResponse;
+import com.devprep.dto.TopicStatusRequest;
 import com.devprep.entity.Category;
 import com.devprep.entity.Topic;
 import com.devprep.entity.User;
 import com.devprep.enums.TopicStatus;
 import com.devprep.exception.InvalidCategoryException;
+import com.devprep.exception.InvalidStatusException;
 import com.devprep.exception.InvalidTopicException;
 import com.devprep.repository.TopicRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -68,6 +70,7 @@ public class TopicService {
         }
 
         topic.setTitle(request.title());
+        topic.setDescription(request.description());
         Topic savedTopic = topicRepository.save(topic);
         log.info("Topic updated successfully : topicId : {}", savedTopic.getTopicId());
 
@@ -84,16 +87,17 @@ public class TopicService {
     }
 
     @Transactional
-    public void deleteTopic(Long topicId, Long categoryId) {
+    public String deleteTopic(Long categoryId, Long topicId) {
         User user = authService.currentUser();
         log.info("Delete request received for topic : {} from user : {}", topicId, user.getId());
 
         Category category = categoryService.findCategoryById(categoryId,user);
         Topic topic = findTopicById(topicId, category, user);
         topicRepository.delete(topic);
-        topicRepository.flush();
 
         log.info("Topic deleted successfully : topicId : {}", topic.getTopicId());
+        return "Topic deleted successfully : topicId :"+topic.getTopicId();
+
     }
 
 
@@ -104,6 +108,22 @@ public class TopicService {
                     return new InvalidCategoryException("Topic with id " + topicId + " doesn't exists for category " + category.getName());
                 }
         );
+    }
+
+    public TopicResponse updateStatus(Long categoryId, Long topicId, TopicStatusRequest request ){
+        User user = authService.currentUser();
+        log.info("Update topic status request received for topic {} from user {}", topicId, user.getId());
+
+        Category category = categoryService.findCategoryById(categoryId,user);
+        Topic topic = findTopicById(topicId, category,user);
+
+        if(!request.status().equals(TopicStatus.IN_PROGRESS) && !request.status().equals(TopicStatus.COMPLETED)){
+            throw new InvalidStatusException("No Status code found with status " + request.status());
+        }
+        topic.setStatus(request.status());
+        log.info("Topic status updated successfully : topicId : {}", topic.getTopicId());
+        Topic savedTopic = topicRepository.save(topic);
+        return topicResponse(savedTopic);
     }
 
     public TopicResponse topicResponse(Topic learningTopic){

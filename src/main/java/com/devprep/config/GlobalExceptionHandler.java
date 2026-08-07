@@ -2,6 +2,8 @@ package com.devprep.config;
 
 import com.devprep.dto.ErrorResponse;
 import com.devprep.exception.InvalidCategoryException;
+import com.devprep.exception.InvalidNotesException;
+import com.devprep.exception.InvalidStatusException;
 import com.devprep.exception.InvalidTopicException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
@@ -35,7 +37,7 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage(), request);
     }
 
-    @ExceptionHandler({InvalidCategoryException.class})
+    @ExceptionHandler({InvalidCategoryException.class,InvalidTopicException.class,InvalidStatusException.class, InvalidNotesException.class})
     public ResponseEntity<ErrorResponse> handleInvalidCategory(InvalidCategoryException ex, HttpServletRequest request) {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
     }
@@ -48,12 +50,6 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining(", "));
         return  buildResponse(HttpStatus.BAD_REQUEST, message, request);
     }
-
-    @ExceptionHandler({InvalidTopicException.class})
-    public ResponseEntity<ErrorResponse> handleTopicNotaFoundException(InvalidTopicException ex, HttpServletRequest request){
-        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
-    }
-
 
     private ResponseEntity<ErrorResponse> buildResponse(
             HttpStatus status,
